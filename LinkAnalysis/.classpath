@@ -2,9 +2,9 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
-	<classpathentry kind="lib" path="C:/Users/marhendra/workspace/LinkAnalysis/lib/lucene-analyzers-common-4.1.0.jar"/>
-	<classpathentry kind="lib" path="C:/Users/marhendra/workspace/LinkAnalysis/lib/lucene-core-4.1.0.jar"/>
-	<classpathentry kind="lib" path="C:/Users/marhendra/workspace/LinkAnalysis/lib/lucene-queryparser-4.1.0.jar"/>
-	<classpathentry kind="lib" path="C:/Users/marhendra/workspace/LinkAnalysis/lib/mysql-connector-java-5.1.23-bin.jar"/>
+	<classpathentry kind="lib" path="C:/Users/marhendra/git/LinkAnalysis/LinkAnalysis/lib/lucene-analyzers-common-4.1.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/marhendra/git/LinkAnalysis/LinkAnalysis/lib/lucene-core-4.1.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/marhendra/git/LinkAnalysis/LinkAnalysis/lib/lucene-queryparser-4.1.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/marhendra/git/LinkAnalysis/LinkAnalysis/lib/mysql-connector-java-5.1.23-bin.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
