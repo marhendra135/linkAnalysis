@@ -36,6 +36,8 @@ public class LuceneSearch {
 	private HashMap<String,String> docMap = null;
 	private ArrayList<Document> listRes = null;
 	private LuceneQuery lQuery = null;
+	private ArrayList<Email> listEmails = null;
+	ArrayList<Document> listDocuments = null;
 	
 
 	public LuceneSearch(){
@@ -51,7 +53,9 @@ public class LuceneSearch {
 		 * */
 		System.out.println("Start building index :" + Calendar.getInstance().getTime());
 	    DocumentCreator docCreator = new DocumentCreator(docMap);
-	    ArrayList<Document> listDocuments = docCreator.documentGenerator();
+	    listEmails = docCreator.emailGenerator();
+	    listDocuments = docCreator.documentGenerator();
+	    
 	    analyzer = analyzeFields();
 	    index = new RAMDirectory();
 	    //index = FSDirectory.open(new File("c:/temp"));

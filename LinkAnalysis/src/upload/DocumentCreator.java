@@ -38,18 +38,34 @@ public class DocumentCreator {
 		 * This function populate the list of Documents from the database.
 		 * This function results list of Documents.
 		 * */
+		try {
+			listDocuments = createDocumentList(listEmails, map);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return listDocuments;
+		
+	}
+	
+	public ArrayList<Email> emailGenerator() {
+		/*
+		 * This function populate the list of Documents from the database.
+		 * This function results list of Documents.
+		 * */
 		DBUploader uploader = new DBUploader();
 		try {
 			ResultSet rs = uploader.readDataBase();
 			listEmails = createEmailList(rs);
-			listDocuments = createDocumentList(listEmails, map);
+			//listDocuments = createDocumentList(listEmails, map);
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
 			uploader.closeConnection();	
 		}
 		
-		return listDocuments;
+		return listEmails;
 		
 	}
 	
@@ -61,18 +77,18 @@ public class DocumentCreator {
 		return listEmails;
 	}
 
-	public ArrayList<Email> createEmailList(ResultSet resultSet) throws SQLException {
+	private ArrayList<Email> createEmailList(ResultSet resultSet) throws SQLException {
 		/*
 		 * This function populate the list of Documents from the resultset of database query.
 		 * This function maps the ResultSet with the Lucene Document class using predefined terms in Map
 		 * This function results list of Documents.
 		 * */
-		ArrayList<Email> listEmails= null;
+		ArrayList<Email> listMails= null;
 		
 		Email email = null;
 		System.out.println("Start populating email list from RS :" + Calendar.getInstance().getTime());
 		if (resultSet!=null){
-			listEmails = new ArrayList<Email>();
+			listMails = new ArrayList<Email>();
 			String oldMId ="-999";
 			String newMId ="-999";
 			String recEmails ="";
@@ -82,11 +98,11 @@ public class DocumentCreator {
 				newMId = resultSet.getString("mid");
 				if (!newMId.equals(oldMId)){
 					if (email!=null){
-						email.setmId(newMId);
+						email.setmId(oldMId);
 						email.setRecEmail(recEmails);
 						email.setRecName(recNames);
 						email.setRecStatus(recStatuses);
-						listEmails.add(email);
+						listMails.add(email);
 						email = null;
 					}
 					
@@ -95,10 +111,11 @@ public class DocumentCreator {
 					email = new Email();
 					Date date= resultSet.getTimestamp("date");
 					email.setDate(date);
-					email.setSenderEmails(resultSet.getString("email_id") + " " +
-							resultSet.getString("email2") + " " +
-							resultSet.getString("email3") + " " +
-							resultSet.getString("email_id"));
+//					email.setSenderEmails(resultSet.getString("email_id") + " " +
+//							resultSet.getString("email2") + " " +
+//							resultSet.getString("email3") + " " +
+//							resultSet.getString("email_id"));
+					email.setSenderEmails(resultSet.getString("sender"));
 					email.setSenderName(resultSet.getString("sender_last") + " " +
 							resultSet.getString("sender_first"));
 					email.setSenderStatus(resultSet.getString("sender_status"));
@@ -113,7 +130,7 @@ public class DocumentCreator {
 					//doc.add(new TextField("type", resultSet.getString("rtype"), Field.Store.YES));
 				} else {
 					recEmails = recEmails + " " + resultSet.getString("rvalue");
-					recEmails = recStatuses + " " + resultSet.getString("rec_status");
+					recStatuses = recStatuses + " " + resultSet.getString("rec_status");
 					recNames = recNames + " , " + resultSet.getString("rec_last") + " " +
 							resultSet.getString("rec_first");
 				}
@@ -123,13 +140,13 @@ public class DocumentCreator {
 				email.setRecEmail(recEmails);
 				email.setRecName(recNames);
 				email.setRecStatus(recStatuses);
-				listEmails.add(email);
+				listMails.add(email);
 				email=null;
 			}			
-			System.out.println("ArrayList size = "+ listEmails.size());
+			System.out.println("ArrayList size = "+ listMails.size());
 		}
 		System.out.println("Done populating email list from RS:" + Calendar.getInstance().getTime());
-		return listEmails; 
+		return listMails; 
 	}
 	public ArrayList<Document> createDocumentList(ArrayList<Email> listEmails, HashMap<String, String> map) throws SQLException {
 		/*
@@ -137,11 +154,11 @@ public class DocumentCreator {
 		 * This function maps the ResultSet with the Lucene Document class using predefined terms in Map
 		 * This function results list of Documents.
 		 * */
-		ArrayList<Document> listDocuments= null;
+		ArrayList<Document> listDocs= null;
 		Document doc = null;
 		System.out.println("Start populating document list from emails :" + Calendar.getInstance().getTime());
 		if (listEmails!=null){
-			listDocuments = new ArrayList<Document>();
+			listDocs = new ArrayList<Document>();
 			Field tField = null;
 			float bValDef = 1/listEmails.size();
 			Iterator<Email> iter = listEmails.iterator();
@@ -153,37 +170,37 @@ public class DocumentCreator {
 				//tField.setBoost(bValDef);
 				doc.add(tField);
 				tField = new TextField(map.get("recEmail"), email.getRecEmail(), Field.Store.NO);
-				//tField.setBoost(bValDef);
+				tField.setBoost(bValDef);
 				doc.add(tField);
 				tField =new TextField(map.get("recName"), email.getRecName(), Field.Store.NO);
-				//tField.setBoost(bValDef);
+				tField.setBoost(bValDef);
 				doc.add(tField);
 				tField =new TextField(map.get("recStatus"), email.getRecStatus(), Field.Store.NO);
-				//tField.setBoost(bValDef);
+				tField.setBoost(bValDef);
 				doc.add(tField);
 				tField =new StringField(map.get("date"), email.getStrDate(),Field.Store.YES);
-				//tField.setBoost(bValDef);
+				tField.setBoost(bValDef);
 				doc.add(tField);
 				tField =new TextField(map.get("senderEmails"), email.getSenderEmails(), Field.Store.YES);
-				//tField.setBoost(bValDef);
+				tField.setBoost(bValDef);
 				doc.add(tField);
 				tField =new TextField(map.get("senderName"), email.getSenderName(), Field.Store.YES);
-				//tField.setBoost(bValDef);
+				tField.setBoost(bValDef);
 				doc.add(tField);
 				tField =new TextField(map.get("senderStatus"), email.getSenderStatus(), Field.Store.NO);
-				//tField.setBoost(bValDef);
+				tField.setBoost(bValDef);
 				doc.add(tField);
 				tField = new TextField(map.get("subject"), email.getSubject(), Field.Store.YES);
-				//tField.setBoost(((float) 1.2) * bValDef);
+				tField.setBoost(((float) 1.2) * bValDef);
 				doc.add(tField);
 				tField = new TextField(map.get("body"), email.getBody(), Field.Store.YES);
-				//tField.setBoost(((float) 1.2) * bValDef);
+				tField.setBoost(((float) 1.2) * bValDef);
 				//doc.add(new TextField("type", resultSet.getString("rtype"), Field.Store.YES));
-				listDocuments.add(doc);
+				listDocs.add(doc);
 			}
-			System.out.println("ArrayList size = "+ listDocuments.size());
+			System.out.println("ArrayList size = "+ listDocs.size());
 		}
 		System.out.println("Done populating document list from emails:" + Calendar.getInstance().getTime());
-		return listDocuments; 
+		return listDocs; 
 	}
 }
