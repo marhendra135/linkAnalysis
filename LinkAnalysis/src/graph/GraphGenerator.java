@@ -6,8 +6,11 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 import data.Email;
@@ -77,6 +80,15 @@ public class GraphGenerator {
 
 		}
 		
+		 Set<GraphObj> set = new HashSet<GraphObj>();
+		 ArrayList<GraphObj> newList = new ArrayList<GraphObj>();
+		 for (Iterator<GraphObj> itr = listGObj.iterator();itr.hasNext(); ) {
+			 GraphObj element = itr.next();
+			 if (set.add(element))
+				 newList.add(element);
+		 }
+		 listGObj.clear();
+		 listGObj.addAll(newList);
 		
 		StringBuilder strOut = new StringBuilder();
 		int i=0;
@@ -93,6 +105,7 @@ public class GraphGenerator {
 	private ArrayList<GraphObj> getCleanedInitModel(HashMap<String,ArrayList<GraphObj>> mapsModel){
 		ArrayList<GraphObj> listGObj = new ArrayList<GraphObj>();
 		ArrayList<GraphObj> curListGObj = null;
+		System.out.println("Cleaned");
 		if (mapsModel!=null){
 			for (Entry<String, ArrayList<GraphObj>> entry : mapsModel.entrySet()) {
 			    curListGObj = entry.getValue();
@@ -100,6 +113,8 @@ public class GraphGenerator {
 			    	curListGObj.remove(0); // remove head
 			    	listGObj.addAll(curListGObj);
 			    }
+		    
+			    
 			}
 		}
 	
@@ -134,17 +149,20 @@ public class GraphGenerator {
 					maps.put(entity, listGObj);
 				}else{
 					listGObj = maps.get(entity);
-					System.out.println("Size of exist List = " +entity + "-" + listGObj.size());
-					if (listGObj.size()<=100){
+					//System.out.println("Size of exist List = " +entity + "-" + listGObj.size());
+					if (listGObj.size()<=500){
 						newListGObj = new ArrayList<GraphObj>();
 						boolean found =false;
 						
 						Iterator<GraphObj> itrObj = listGObj.iterator();
+						GraphObj newObj = null;
 						while (!found && itrObj.hasNext()){
 							GraphObj gObj = itrObj.next();
+							//System.out.println(gObj.getvOut() + "-" + gObj.getvIn() + "-" + obj.getmID());
 							if (gObj.getvOut()==obj.getmID())
 								found=true;
 							else{
+								//System.out.println("2::" + gObj.getvOut() + "-" + gObj.getvIn() + "-" + obj.getmID());
 								if (listGObj.size()>1){
 									if (!gObj.getvIn().equals("-99")){
 										newListGObj.add(new GraphObj(gObj.getvOut(), obj.getmID(), entity));
@@ -157,8 +175,20 @@ public class GraphGenerator {
 							}
 						}
 						if (!found){
-							System.out.println("Size of new List  = " +entity + "-" + newListGObj.size());
+							//System.out.println("Size of new List  = " +entity + "-" + newListGObj.size());
 							listGObj.addAll(newListGObj);
+							
+							 Set<GraphObj> set = new HashSet<GraphObj>();
+							 ArrayList<GraphObj> newList = new ArrayList<GraphObj>();
+							 for (Iterator<GraphObj> itr = listGObj.iterator();itr.hasNext(); ) {
+								 GraphObj element = itr.next();
+								 if (set.add(element))
+									 newList.add(element);
+							 }
+							 listGObj.clear();
+							 listGObj.addAll(newList);
+							
+
 							maps.remove(entity);
 							maps.put(entity, listGObj);
 						}

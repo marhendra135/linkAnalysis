@@ -40,8 +40,19 @@ public class GraphObj {
 	public String toString() {
 		return  "(" + vOut + "," + vIn + "," + term
 				+ ")";
-	};
+	}
 	
-	
+	@Override 
+	public boolean equals(Object other) {
+	    boolean result = false;
+	    GraphObj comObj = (GraphObj) other;
+	    result = this.getvOut().equals(comObj.getvOut()) &&
+	    		this.getvIn().equals(comObj.getvIn()) &&
+	    		this.getTerm().equals(comObj.getTerm());
+	    return result;
+	}
+    @Override public int hashCode() {
+        return 41;
+    }
 	
 }
