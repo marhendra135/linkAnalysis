@@ -1,10 +1,16 @@
 package work;
 
+import graph.CalcBackLink;
+import graph.CalcPageRank;
+import graph.GraphGenerator;
+import graph.GraphObj;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.core.KeywordAnalyzer;
@@ -38,23 +44,73 @@ public class LuceneSearch {
 	private LuceneQuery lQuery = null;
 	private ArrayList<Email> listEmails = null;
 	ArrayList<Document> listDocuments = null;
+	private int analysisType = 2;
+	private DocumentCreator docCreator = null;
 	
+
+	
+	public int getAnalysisType() {
+		return analysisType;
+	}
+
+	public void setAnalysisType(int analysisType) {
+		this.analysisType = analysisType;
+	}
 
 	public LuceneSearch(){
 		/*Initialize this class is alsi initializing Map properties that defines the document's attributes/ fields
 		 * */
 		initializeProp();
+		docCreator = new DocumentCreator(docMap);
 	}
 	
-	public  void buildIndex() throws IOException, ParseException, java.text.ParseException {
+	public  void buildIndex(boolean forceReadFromDB) throws IOException, ParseException, java.text.ParseException {
 		/*
 		 * Index is built by populating document from DBMS and put into list of Documents by the DocumentCreator class
 		 * list of Documents then indexed into RAM using several Analyzers
 		 * */
 		System.out.println("Start building index :" + Calendar.getInstance().getTime());
-	    DocumentCreator docCreator = new DocumentCreator(docMap);
-	    listEmails = docCreator.emailGenerator();
-	    listDocuments = docCreator.documentGenerator();
+		if (forceReadFromDB) {
+			listEmails = docCreator.emailGenerator();
+		}
+		GraphGenerator gg = new GraphGenerator();
+		ArrayList<GraphObj> listGEmail = null;
+		ArrayList<GraphObj> listGEmailAdr = null;
+		Map<String, Double> listCalcEmail = null;
+		Map<String, Double> listCalcEmailAdr = null;
+		
+		switch (analysisType) {
+		
+		case 1: //backlink
+			System.out.println("backlink");
+			CalcBackLink cBL = new CalcBackLink();
+			if (listGEmail==null){
+				listGEmail = gg.generateGraphInputModelforEmail();
+				listGEmailAdr = gg.generateGraphInputModelforEmailAddress(listEmails);
+			}
+			listCalcEmail = cBL.getBackLinks(listGEmail);
+			listCalcEmailAdr = cBL.getBackLinks(listGEmailAdr);
+			docCreator.setEmailBVALValues(false, listEmails, listCalcEmail, listCalcEmailAdr);
+			break;
+		case 2: //pagerank
+			System.out.println("pagerank");
+			if (listGEmail==null){
+				listGEmail = gg.generateGraphInputModelforEmail();
+				listGEmailAdr = gg.generateGraphInputModelforEmailAddress(listEmails);
+			}
+			CalcPageRank pRG = new CalcPageRank(listGEmail, listGEmailAdr);
+			listCalcEmail = pRG.computeForEmail();
+			listCalcEmailAdr = pRG.computeForEmailAddress();
+			docCreator.setEmailBVALValues(false, listEmails, listCalcEmail, listCalcEmailAdr);
+			break;
+		case 3: //hits
+			System.out.println("HITS");
+			break;
+		default:
+			docCreator.setEmailBVALValues(true, listEmails, listCalcEmail, listCalcEmailAdr);
+			break;
+		}
+	    listDocuments = docCreator.documentGenerator(listEmails);
 	    
 	    analyzer = analyzeFields();
 	    index = new RAMDirectory();

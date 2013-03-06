@@ -461,7 +461,7 @@ public class LuceneSearchUI {
 			public void actionPerformed(ActionEvent arg0) {
 				try {
 					frmInGroup.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-					luceneSearch.buildIndex();
+					luceneSearch.buildIndex(true);
 					frmInGroup.setCursor(Cursor.getDefaultCursor());
 				} catch (Exception e) {
 					// TODO Auto-generated catch block

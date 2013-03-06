@@ -7,6 +7,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -20,9 +22,10 @@ public class DocumentCreator {
 	 * This class act as a wrapper for Database connection to populate the Documents/ Emails.
 	 * 
 	 * */
-	private ArrayList<Document> listDocuments= null;
+	//private ArrayList<Document> listDocuments= null;
 	private HashMap<String,String> map = null;
-	private ArrayList<Email> listEmails = null;
+	//private ArrayList<Email> listEmails = null;
+
 
 	public DocumentCreator() {
 		super();
@@ -33,17 +36,12 @@ public class DocumentCreator {
 		this.map = map;
 	}
 
-	public ArrayList<Document> documentGenerator() {
+	public ArrayList<Document> documentGenerator(ArrayList<Email> listEmails) {
 		/*
 		 * This function populate the list of Documents from the database.
 		 * This function results list of Documents.
 		 * */
-		try {
-			listDocuments = createDocumentList(listEmails, map);
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		ArrayList<Document> listDocuments = createDocumentList(listEmails, map);
 
 		return listDocuments;
 		
@@ -54,6 +52,7 @@ public class DocumentCreator {
 		 * This function populate the list of Documents from the database.
 		 * This function results list of Documents.
 		 * */
+		ArrayList<Email> listEmails = null;
 		DBUploader uploader = new DBUploader();
 		try {
 			ResultSet rs = uploader.readDataBase();
@@ -69,13 +68,7 @@ public class DocumentCreator {
 		
 	}
 	
-	public ArrayList<Document> getListDocuments() {
-		return listDocuments;
-	}
 
-	public ArrayList<Email> getListEmails() {
-		return listEmails;
-	}
 
 	private ArrayList<Email> createEmailList(ResultSet resultSet) throws SQLException {
 		/*
@@ -148,7 +141,7 @@ public class DocumentCreator {
 		System.out.println("Done populating email list from RS:" + Calendar.getInstance().getTime());
 		return listMails; 
 	}
-	public ArrayList<Document> createDocumentList(ArrayList<Email> listEmails, HashMap<String, String> map) throws SQLException {
+	public ArrayList<Document> createDocumentList(ArrayList<Email> listEmails, HashMap<String, String> map)  {
 		/*
 		 * This function populate the list of Documents from the resultset of database query.
 		 * This function maps the ResultSet with the Lucene Document class using predefined terms in Map
@@ -179,7 +172,7 @@ public class DocumentCreator {
 				tField.setBoost(bValDef);
 				doc.add(tField);
 				tField =new StringField(map.get("date"), email.getStrDate(),Field.Store.YES);
-				tField.setBoost(bValDef);
+				//tField.setBoost(bValDef);
 				doc.add(tField);
 				tField =new TextField(map.get("senderEmails"), email.getSenderEmails(), Field.Store.YES);
 				tField.setBoost(bValDef);
@@ -202,5 +195,44 @@ public class DocumentCreator {
 		}
 		System.out.println("Done populating document list from emails:" + Calendar.getInstance().getTime());
 		return listDocs; 
+	}
+	
+	public void setEmailBVALValues(boolean setDefault, ArrayList<Email> listEmails, Map<String, Double> listCalcEmail, Map<String, Double> listCalcEmailAdr){
+		double minEmail = 1000;
+		double minEmailAdr =1000;
+		double bVal = 1/listEmails.size(); 
+		if (setDefault){
+			minEmail = 1;
+			minEmailAdr = 1;
+		}
+		else{
+			//get min value
+			for (Entry<String, Double> entry : listCalcEmail.entrySet()) {
+			    double curVal = entry.getValue().doubleValue();
+			    if (minEmail>curVal)
+			    	minEmail = curVal;
+			}
+			for (Entry<String, Double> entry : listCalcEmailAdr.entrySet()) {
+			    double curVal = entry.getValue().doubleValue();
+			    if (minEmailAdr>curVal)
+			    	minEmailAdr = curVal;
+			}
+		}
+		
+		for (Iterator<Email> iterator = listEmails.iterator(); iterator.hasNext();) {
+			Email email = (Email) iterator.next();
+			
+			double nEmailVal = minEmail;
+			double nEmailAdrVal = minEmailAdr;
+			if (!setDefault){
+				if (listCalcEmail.get(email.getmId())!=null)
+					System.out.println(":>" + email.getmId() + "::"+ listCalcEmail.get(email.getmId()).doubleValue());
+				if (listCalcEmail.get(email.getmId())!=null)
+					nEmailVal = listCalcEmail.get(email.getmId());
+				if (listCalcEmailAdr.get(email.getSenderEmails())!=null)
+					nEmailAdrVal = listCalcEmailAdr.get(email.getSenderEmails());	
+			}
+			email.setbVal(bVal*nEmailAdrVal*nEmailAdrVal);
+		}
 	}
 }

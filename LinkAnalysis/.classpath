@@ -6,5 +6,15 @@
 	<classpathentry kind="lib" path="C:/Users/marhendra/git/LinkAnalysis/LinkAnalysis/lib/lucene-core-4.1.0.jar"/>
 	<classpathentry kind="lib" path="C:/Users/marhendra/git/LinkAnalysis/LinkAnalysis/lib/lucene-queryparser-4.1.0.jar"/>
 	<classpathentry kind="lib" path="C:/Users/marhendra/git/LinkAnalysis/LinkAnalysis/lib/mysql-connector-java-5.1.23-bin.jar"/>
+	<classpathentry kind="lib" path="C:/Users/marhendra/git/LinkAnalysis/LinkAnalysis/lib/jung-3d-2.0.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/marhendra/git/LinkAnalysis/LinkAnalysis/lib/jung-3d-demos-2.0.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/marhendra/git/LinkAnalysis/LinkAnalysis/lib/jung-algorithms-2.0.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/marhendra/git/LinkAnalysis/LinkAnalysis/lib/jung-api-2.0.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/marhendra/git/LinkAnalysis/LinkAnalysis/lib/jung-graph-impl-2.0.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/marhendra/git/LinkAnalysis/LinkAnalysis/lib/jung-io-2.0.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/marhendra/git/LinkAnalysis/LinkAnalysis/lib/jung-jai-2.0.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/marhendra/git/LinkAnalysis/LinkAnalysis/lib/jung-jai-samples-2.0.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/marhendra/git/LinkAnalysis/LinkAnalysis/lib/jung-samples-2.0.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/marhendra/git/LinkAnalysis/LinkAnalysis/lib/jung-visualization-2.0.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

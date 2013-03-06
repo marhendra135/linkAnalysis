@@ -11,20 +11,20 @@ public class LuceneTest {
 	public static void main(String[] args) throws IOException, ParseException {
 		lSearch = new LuceneSearch();
 		try {
-			lSearch.buildIndex();
+			lSearch.buildIndex(true);
 		} catch (java.text.ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 //		System.out.println("tes standard query 1.1 -> single term");
-//		 String queryStr = "Person";
+		 String queryStr = "Person";
 //		 lSearch.standardQuery(queryStr);
 //		 System.out.println("tes standard query 1.1 -> phrase");
 //		 queryStr = "senderName:\"Dickson Stacy\"";
 //		 lSearch.standardQuery(queryStr);
-//		 System.out.println("tes standard query 1.1 -> wildcard");
-//		 queryStr = "dick*";
-//		 lSearch.standardQuery(queryStr);
+		 System.out.println("tes standard query 1.1 -> wildcard");
+		 queryStr = "dick*";
+		 lSearch.standardQuery(queryStr);
 //		 System.out.println("tes standard query 1.1 -> regex");
 //		 queryStr = "/[d]ickson/";
 //		 lSearch.standardQuery(queryStr);

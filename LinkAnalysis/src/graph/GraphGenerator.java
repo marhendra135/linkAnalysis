@@ -52,8 +52,8 @@ public class GraphGenerator {
 			GraphObj gObj = (GraphObj) iterator.next();
 			strOut.append(gObj.toString() +"\n");
 		}
-		System.out.println("Graph : " + strOut.toString());
-		System.out.println("Graph Size: " + i);
+		//System.out.println("Graph : " + strOut.toString());
+		System.out.println("Graph Emails Size: " + i);
 		return listGObj;
 	}
 	
@@ -71,7 +71,7 @@ public class GraphGenerator {
 				st =new StringTokenizer(entity, " ");
 				while (st.hasMoreElements()) {
 					String strAdd = (String) st.nextElement();
-					if (!strAdd.equals("")){
+					if (!strAdd.equals("") && !email.getSenderEmails().equals(strAdd)){
 						gObj = new GraphObj(email.getSenderEmails(), strAdd, email.getmId());
 							listGObj.add(gObj);
 					}
@@ -97,8 +97,8 @@ public class GraphGenerator {
 			gObj = (GraphObj) iterator.next();
 			strOut.append(gObj.toString() +"\n");
 		}
-		System.out.println("Graph Email Address : " + strOut.toString());
-		System.out.println("Graph Size: " + i);
+		//System.out.println("Graph Email Address : " + strOut.toString());
+		System.out.println("Graph Email Address Size: " + i);
 		return listGObj;
 	}
 	
@@ -123,6 +123,7 @@ public class GraphGenerator {
 	
 	private HashMap<String,ArrayList<GraphObj>> generateInitModel(ArrayList<ContentObj> fileContents) throws IOException{
 		HashMap<String,ArrayList<GraphObj>> maps = new HashMap<String,ArrayList<GraphObj>>();
+		Set<String> setToBeRemoved = new HashSet<String>(); 
 		Iterator<ContentObj> iter = fileContents.iterator();
 		while (iter.hasNext()){
 			ContentObj obj = iter.next();
@@ -140,6 +141,7 @@ public class GraphGenerator {
 			Iterator<String> iterEnt = cleanedEntities.iterator();
 			ArrayList<GraphObj> listGObj = null;
 			ArrayList<GraphObj> newListGObj = null;
+			
 			while (iterEnt.hasNext()){
 				String entity = iterEnt.next();
 				boolean isExist = (maps.get(entity))!=null;
@@ -159,19 +161,47 @@ public class GraphGenerator {
 						while (!found && itrObj.hasNext()){
 							GraphObj gObj = itrObj.next();
 							//System.out.println(gObj.getvOut() + "-" + gObj.getvIn() + "-" + obj.getmID());
-							if (gObj.getvOut()==obj.getmID())
+							//if (gObj.getvOut()==obj.getmID())
+							if (gObj.getvOut()==obj.getmID() || gObj.getvIn()==obj.getmID())
 								found=true;
 							else{
 								//System.out.println("2::" + gObj.getvOut() + "-" + gObj.getvIn() + "-" + obj.getmID());
 								if (listGObj.size()>1){
 									if (!gObj.getvIn().equals("-99")){
-										newListGObj.add(new GraphObj(gObj.getvOut(), obj.getmID(), entity));
-										newListGObj.add(new GraphObj(obj.getmID(), gObj.getvOut(), entity));
+										if (Integer.parseInt(gObj.getvOut())>Integer.parseInt(obj.getmID())){
+											if (Integer.parseInt(gObj.getvIn())>Integer.parseInt(obj.getmID()))
+												newListGObj.add(new GraphObj(gObj.getvIn(), obj.getmID(), entity));
+											else{
+												newListGObj.add(new GraphObj(gObj.getvOut(), obj.getmID(), entity));
+												newListGObj.add(new GraphObj(obj.getmID(), gObj.getvIn(), entity));
+											}
+										}else{
+										
+											newListGObj.add(new GraphObj(obj.getmID(), gObj.getvOut(), entity));
+										}
 									}
 								} else {
-									newListGObj.add(new GraphObj(gObj.getvOut(), obj.getmID(), entity));
-									newListGObj.add(new GraphObj(obj.getmID(), gObj.getvOut(), entity));
+									if (Integer.parseInt(gObj.getvOut())>Integer.parseInt(obj.getmID())){
+										if (Integer.parseInt(gObj.getvIn())>Integer.parseInt(obj.getmID()))
+											newListGObj.add(new GraphObj(gObj.getvIn(), obj.getmID(), entity));
+										else{
+											newListGObj.add(new GraphObj(gObj.getvOut(), obj.getmID(), entity));
+											newListGObj.add(new GraphObj(obj.getmID(), gObj.getvIn(), entity));
+										}
+									}else{
+									
+										newListGObj.add(new GraphObj(obj.getmID(), gObj.getvOut(), entity));
+									}
 								}
+//								if (listGObj.size()>1){
+//									if (!gObj.getvIn().equals("-99")){
+//										newListGObj.add(new GraphObj(gObj.getvOut(), obj.getmID(), entity));
+//										newListGObj.add(new GraphObj(obj.getmID(), gObj.getvOut(), entity));
+//									}
+//								} else {
+//									newListGObj.add(new GraphObj(gObj.getvOut(), obj.getmID(), entity));
+//									newListGObj.add(new GraphObj(obj.getmID(), gObj.getvOut(), entity));
+//								}
 							}
 						}
 						if (!found){
@@ -194,13 +224,19 @@ public class GraphGenerator {
 						}
 					}	
 					else {
-						System.out.println("Entity  = " +entity + " is going to explode");
+						//System.out.println("Entity  = " +entity + " is going to explode");
+						setToBeRemoved.add(entity);
 					}
 				}
 			}
 					
 		}
-		
+		//remove ToBeRemoved
+		System.out.println("Entity  toberemoved= " +setToBeRemoved.size());
+		for (Iterator<String> iterator = setToBeRemoved.iterator(); iterator.hasNext();) {
+			String strEntity = (String) iterator.next();
+			maps.remove(strEntity);
+		}
 		return maps;
 	} 
 	
