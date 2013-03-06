@@ -1,5 +1,9 @@
 package upload;
 
+import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -200,7 +204,7 @@ public class DocumentCreator {
 	public void setEmailBVALValues(boolean setDefault, ArrayList<Email> listEmails, Map<String, Double> listCalcEmail, Map<String, Double> listCalcEmailAdr){
 		double minEmail = 1000;
 		double minEmailAdr =1000;
-		double bVal = 1/listEmails.size(); 
+		double bVal = 1.0/listEmails.size(); 
 		if (setDefault){
 			minEmail = 1;
 			minEmailAdr = 1;
@@ -218,21 +222,46 @@ public class DocumentCreator {
 			    	minEmailAdr = curVal;
 			}
 		}
-		
+		StringBuilder sb = new StringBuilder();
 		for (Iterator<Email> iterator = listEmails.iterator(); iterator.hasNext();) {
 			Email email = (Email) iterator.next();
 			
 			double nEmailVal = minEmail;
 			double nEmailAdrVal = minEmailAdr;
 			if (!setDefault){
-				if (listCalcEmail.get(email.getmId())!=null)
-					System.out.println(":>" + email.getmId() + "::"+ listCalcEmail.get(email.getmId()).doubleValue());
+				//if (listCalcEmail.get(email.getmId())!=null)
+					
 				if (listCalcEmail.get(email.getmId())!=null)
 					nEmailVal = listCalcEmail.get(email.getmId());
 				if (listCalcEmailAdr.get(email.getSenderEmails())!=null)
 					nEmailAdrVal = listCalcEmailAdr.get(email.getSenderEmails());	
 			}
-			email.setbVal(bVal*nEmailAdrVal*nEmailAdrVal);
+			email.setbVal(bVal*nEmailAdrVal*nEmailVal);
+			sb.append(":>" + email.getmId() + "::"+ email.getbVal() + "\n");
+			System.out.println(":>" + email.getmId() + "::"+ email.getbVal() + "-" + bVal+ "-" +  nEmailVal + "-" + nEmailAdrVal);
 		}
+		writeStringToFile(sb.toString());
+	}
+	private static void writeStringToFile(String strRes){
+		BufferedWriter writer = null;
+        
+        try {
+            String text = strRes;
+            //File file = new File("EnromEmailTermsCalais.txt");
+            writer = new BufferedWriter(new FileWriter("bVALValues.txt"));
+            writer.write(text);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (writer != null) {
+                    writer.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
 	}
 }
