@@ -44,7 +44,7 @@ public class LuceneSearch {
 	private LuceneQuery lQuery = null;
 	private ArrayList<Email> listEmails = null;
 	ArrayList<Document> listDocuments = null;
-	private int analysisType = 1;
+	private int analysisType = 2;
 	private DocumentCreator docCreator = null;
 	
 

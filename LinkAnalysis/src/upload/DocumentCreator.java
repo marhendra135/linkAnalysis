@@ -157,11 +157,12 @@ public class DocumentCreator {
 		if (listEmails!=null){
 			listDocs = new ArrayList<Document>();
 			Field tField = null;
-			float bValDef = 1/listEmails.size();
+			float bValDef = (float) (1.0/listEmails.size());
 			Iterator<Email> iter = listEmails.iterator();
+			StringBuilder sb = new StringBuilder();
 			while (iter.hasNext()) {
 				Email email = iter.next();
-				email.setbVal(bValDef);
+				bValDef= (float) email.getbVal();
 				doc = new Document();
 				tField = new StringField(map.get("mId"), email.getmId(), Field.Store.NO);
 				//tField.setBoost(bValDef);
@@ -194,8 +195,10 @@ public class DocumentCreator {
 				tField.setBoost(((float) 1.2) * bValDef);
 				//doc.add(new TextField("type", resultSet.getString("rtype"), Field.Store.YES));
 				listDocs.add(doc);
+				sb.append(":>" + email.getmId() + "::"+ email.getbVal() + "\n");
 			}
 			System.out.println("ArrayList size = "+ listDocs.size());
+			//writeStringToFile(sb.toString(),"bVALDoc.txt");
 		}
 		System.out.println("Done populating document list from emails:" + Calendar.getInstance().getTime());
 		return listDocs; 
@@ -238,17 +241,17 @@ public class DocumentCreator {
 			}
 			email.setbVal(bVal*nEmailAdrVal*nEmailVal);
 			sb.append(":>" + email.getmId() + "::"+ email.getbVal() + "\n");
-			System.out.println(":>" + email.getmId() + "::"+ email.getbVal() + "-" + bVal+ "-" +  nEmailVal + "-" + nEmailAdrVal);
+			//System.out.println(":>" + email.getmId() + "::"+ email.getbVal() + "-" + bVal+ "-" +  nEmailVal + "-" + nEmailAdrVal);
 		}
-		writeStringToFile(sb.toString());
+		//writeStringToFile(sb.toString(),"bVALEmail.txt");
 	}
-	private static void writeStringToFile(String strRes){
+	private static void writeStringToFile(String strRes, String name){
 		BufferedWriter writer = null;
         
         try {
             String text = strRes;
             //File file = new File("EnromEmailTermsCalais.txt");
-            writer = new BufferedWriter(new FileWriter("bVALValues.txt"));
+            writer = new BufferedWriter(new FileWriter(name));
             writer.write(text);
         } catch (FileNotFoundException e) {
             e.printStackTrace();

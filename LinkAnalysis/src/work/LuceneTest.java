@@ -23,7 +23,7 @@ public class LuceneTest {
 //		 queryStr = "senderName:\"Dickson Stacy\"";
 //		 lSearch.standardQuery(queryStr);
 		 System.out.println("tes standard query 1.1 -> wildcard");
-		 queryStr = "dick*";
+		 queryStr = "dickson";
 		 lSearch.standardQuery(queryStr);
 //		 System.out.println("tes standard query 1.1 -> regex");
 //		 queryStr = "/[d]ickson/";
