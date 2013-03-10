@@ -6,15 +6,22 @@
 	<classpathentry kind="lib" path="C:/Users/marhendra/git/LinkAnalysis/LinkAnalysis/lib/lucene-core-4.1.0.jar"/>
 	<classpathentry kind="lib" path="C:/Users/marhendra/git/LinkAnalysis/LinkAnalysis/lib/lucene-queryparser-4.1.0.jar"/>
 	<classpathentry kind="lib" path="C:/Users/marhendra/git/LinkAnalysis/LinkAnalysis/lib/mysql-connector-java-5.1.23-bin.jar"/>
-	<classpathentry kind="lib" path="C:/Users/marhendra/git/LinkAnalysis/LinkAnalysis/lib/jung-3d-2.0.1.jar"/>
-	<classpathentry kind="lib" path="C:/Users/marhendra/git/LinkAnalysis/LinkAnalysis/lib/jung-3d-demos-2.0.1.jar"/>
 	<classpathentry kind="lib" path="C:/Users/marhendra/git/LinkAnalysis/LinkAnalysis/lib/jung-algorithms-2.0.1.jar"/>
-	<classpathentry kind="lib" path="C:/Users/marhendra/git/LinkAnalysis/LinkAnalysis/lib/jung-api-2.0.1.jar"/>
 	<classpathentry kind="lib" path="C:/Users/marhendra/git/LinkAnalysis/LinkAnalysis/lib/jung-graph-impl-2.0.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/marhendra/git/LinkAnalysis/LinkAnalysis/lib/jung-3d-2.0.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/marhendra/git/LinkAnalysis/LinkAnalysis/lib/jung-api-2.0.1.jar"/>
 	<classpathentry kind="lib" path="C:/Users/marhendra/git/LinkAnalysis/LinkAnalysis/lib/jung-io-2.0.1.jar"/>
 	<classpathentry kind="lib" path="C:/Users/marhendra/git/LinkAnalysis/LinkAnalysis/lib/jung-jai-2.0.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/marhendra/git/LinkAnalysis/LinkAnalysis/lib/jung-visualization-2.0.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/marhendra/git/LinkAnalysis/LinkAnalysis/lib/jung-3d-demos-2.0.1.jar"/>
 	<classpathentry kind="lib" path="C:/Users/marhendra/git/LinkAnalysis/LinkAnalysis/lib/jung-jai-samples-2.0.1.jar"/>
 	<classpathentry kind="lib" path="C:/Users/marhendra/git/LinkAnalysis/LinkAnalysis/lib/jung-samples-2.0.1.jar"/>
-	<classpathentry kind="lib" path="C:/Users/marhendra/git/LinkAnalysis/LinkAnalysis/lib/jung-visualization-2.0.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/marhendra/git/LinkAnalysis/LinkAnalysis/lib/collections-generic-4.01.jar"/>
+	<classpathentry kind="lib" path="C:/Users/marhendra/git/LinkAnalysis/LinkAnalysis/lib/colt-1.2.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/marhendra/git/LinkAnalysis/LinkAnalysis/lib/concurrent-1.3.4.jar"/>
+	<classpathentry kind="lib" path="C:/Users/marhendra/git/LinkAnalysis/LinkAnalysis/lib/j3d-core-1.3.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/marhendra/git/LinkAnalysis/LinkAnalysis/lib/stax-api-1.0.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/marhendra/git/LinkAnalysis/LinkAnalysis/lib/vecmath-1.3.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/marhendra/git/LinkAnalysis/LinkAnalysis/lib/wstx-asl-3.2.6.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

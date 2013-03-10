@@ -30,12 +30,16 @@ import java.util.Iterator;
 import javax.swing.JComboBox;
 import javax.swing.table.DefaultTableModel;
 import org.apache.lucene.document.Document;
+import org.apache.lucene.queryparser.classic.ParseException;
+
 import data.Email;
 import work.LuceneSearch;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.io.IOException;
+
 import javax.swing.JScrollPane;
-public class LuceneSearchUI {
+public class LinkAnalysisUI {
 
 	private JFrame frmInGroup;
 	private JTextField textSearchStd;
@@ -58,6 +62,7 @@ public class LuceneSearchUI {
 	private DateFormat df;
 	private DefaultTableModel modelStd;
 	private DefaultTableModel modelAdv;
+	private boolean forceDB = true;
 	JFrame frmHelp =null;
 
 	/**
@@ -67,7 +72,7 @@ public class LuceneSearchUI {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					LuceneSearchUI window = new LuceneSearchUI();
+					LinkAnalysisUI window = new LinkAnalysisUI();
 					window.frmInGroup.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -79,7 +84,7 @@ public class LuceneSearchUI {
 	/**
 	 * Create the application.
 	 */
-	public LuceneSearchUI() {
+	public LinkAnalysisUI() {
 		initialize();
 	}
 
@@ -95,7 +100,7 @@ public class LuceneSearchUI {
 		
 		frmInGroup = new JFrame();
 		frmInGroup.setResizable(false);
-		frmInGroup.setTitle("IN4325 - Group 11 - Lucene Search");
+		frmInGroup.setTitle("IN4325 - Group 11 - Lucene Search with Link Analysis");
 		frmInGroup.setBounds(100, 100, 450, 300);
 		frmInGroup.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmInGroup.setSize(800,600);
@@ -106,9 +111,10 @@ public class LuceneSearchUI {
 		JMenu mnTools = new JMenu("Tools");
 		menuBar.add(mnTools);
 		
-		JMenuItem mntmUpdateIndex = new JMenuItem("Build Index");
+		JMenuItem mntmIndexNoAnalysis = new JMenuItem("Build Index-No Analysis");
 
-		mnTools.add(mntmUpdateIndex);
+
+		mnTools.add(mntmIndexNoAnalysis);
 		
 		JMenuItem mntmClose = new JMenuItem("Close");
 		mntmClose.addActionListener(new ActionListener() {
@@ -116,6 +122,15 @@ public class LuceneSearchUI {
 				frmInGroup.dispose();
 			}
 		});
+		
+		JMenuItem mntmIndexBackLink = new JMenuItem("Build Index-BackLink");
+		mnTools.add(mntmIndexBackLink);
+		
+		JMenuItem mntmIndexPageRank = new JMenuItem("Build Index-PageRank");
+		mnTools.add(mntmIndexPageRank);
+		
+		JMenuItem mntmIndexHITS = new JMenuItem("BuildMenu-HITS");
+		mnTools.add(mntmIndexHITS);
 		mnTools.add(mntmClose);
 		
 		JMenu mnHelp = new JMenu("Help");
@@ -145,7 +160,7 @@ public class LuceneSearchUI {
 			public void actionPerformed(ActionEvent arg0) {
 				System.out.println("Search standard will be performed");
 				listResult = null;
-
+				frmInGroup.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 				try {
 					listResult = luceneSearch.standardQuery(textSearchStd.getText());
 				} catch (Exception e) {
@@ -162,11 +177,12 @@ public class LuceneSearchUI {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+				frmInGroup.setCursor(Cursor.getDefaultCursor());
 			}
 		});
 
 		
-		JLabel lblLucene = new JLabel("Lucene !");
+		final JLabel lblLucene = new JLabel("Lucene !");
 		lblLucene.setHorizontalAlignment(SwingConstants.CENTER);
 		lblLucene.setFont(new Font("Tahoma", Font.PLAIN, 16));
 		
@@ -182,9 +198,6 @@ public class LuceneSearchUI {
 				.addGroup(gl_stdPanel.createSequentialGroup()
 					.addGroup(gl_stdPanel.createParallelGroup(Alignment.LEADING)
 						.addGroup(gl_stdPanel.createSequentialGroup()
-							.addGap(349)
-							.addComponent(lblLucene, GroupLayout.PREFERRED_SIZE, 90, GroupLayout.PREFERRED_SIZE))
-						.addGroup(gl_stdPanel.createSequentialGroup()
 							.addGap(70)
 							.addGroup(gl_stdPanel.createParallelGroup(Alignment.LEADING)
 								.addComponent(foundStdLbl, GroupLayout.PREFERRED_SIZE, 167, GroupLayout.PREFERRED_SIZE)
@@ -195,24 +208,27 @@ public class LuceneSearchUI {
 								.addGroup(gl_stdPanel.createSequentialGroup()
 									.addGap(279)
 									.addComponent(btnSearchStd))
-								.addComponent(textSearchStd, GroupLayout.PREFERRED_SIZE, 623, GroupLayout.PREFERRED_SIZE))))
+								.addComponent(textSearchStd, GroupLayout.PREFERRED_SIZE, 623, GroupLayout.PREFERRED_SIZE)))
+						.addGroup(gl_stdPanel.createSequentialGroup()
+							.addGap(266)
+							.addComponent(lblLucene, GroupLayout.PREFERRED_SIZE, 256, GroupLayout.PREFERRED_SIZE)))
 					.addContainerGap(71, Short.MAX_VALUE))
 		);
 		gl_stdPanel.setVerticalGroup(
 			gl_stdPanel.createParallelGroup(Alignment.TRAILING)
 				.addGroup(gl_stdPanel.createSequentialGroup()
 					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-					.addGroup(gl_stdPanel.createParallelGroup(Alignment.LEADING)
+					.addComponent(lblLucene)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGroup(gl_stdPanel.createParallelGroup(Alignment.TRAILING)
 						.addGroup(gl_stdPanel.createSequentialGroup()
-							.addComponent(lblLucene)
-							.addGap(27)
 							.addComponent(textSearchStd, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 							.addGap(11)
 							.addComponent(btnSearchStd)
 							.addGap(18)
 							.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 304, GroupLayout.PREFERRED_SIZE)
 							.addGap(200))
-						.addGroup(Alignment.TRAILING, gl_stdPanel.createSequentialGroup()
+						.addGroup(gl_stdPanel.createSequentialGroup()
 							.addComponent(foundStdLbl)
 							.addGap(515))))
 		);
@@ -316,7 +332,9 @@ public class LuceneSearchUI {
 		btnSearchAdv.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				System.out.println("Search advanced will be performed");
+				frmInGroup.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 				listResult = null;
+				
 				try {
 					String strBody = "";
 					strBody = textBodyHas.getText();
@@ -335,11 +353,114 @@ public class LuceneSearchUI {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} 
-
+				frmInGroup.setCursor(Cursor.getDefaultCursor());
 			}
 		});
 		btnSearchAdv.setEnabled(false);
+
+		mntmIndexNoAnalysis.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				frmInGroup.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+				try {
+					luceneSearch.setAnalysisType(0);
+					luceneSearch.buildIndex(forceDB);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (java.text.ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				frmInGroup.setCursor(Cursor.getDefaultCursor());
+				lblLucene.setText("Lucene Search - No Link Analysis");
+				if (forceDB){ //first time
+					forceDB = false;
+					btnSearchStd.setEnabled(true);
+					btnSearchAdv.setEnabled(true);
+				}
+			}
+		});
+		mntmIndexBackLink.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				frmInGroup.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+				try {
+					luceneSearch.setAnalysisType(1);
+					luceneSearch.buildIndex(forceDB);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (java.text.ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				frmInGroup.setCursor(Cursor.getDefaultCursor());
+				lblLucene.setText("Lucene Search - BackLink Analysis");
+				if (forceDB){
+					forceDB = false;
+					btnSearchStd.setEnabled(true);
+					btnSearchAdv.setEnabled(true);
+				}
+			}
+		});
 		
+		mntmIndexPageRank.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				frmInGroup.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+				try {
+					luceneSearch.setAnalysisType(2);
+					luceneSearch.buildIndex(forceDB);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (java.text.ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				frmInGroup.setCursor(Cursor.getDefaultCursor());
+				lblLucene.setText("Lucene Search - Page Rank Analysis");
+				if (forceDB){
+					forceDB = false;
+					btnSearchStd.setEnabled(true);
+					btnSearchAdv.setEnabled(true);
+				}
+			}
+		});
+		
+
+		mntmIndexHITS.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				frmInGroup.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+				try {
+					luceneSearch.setAnalysisType(3);
+					luceneSearch.buildIndex(forceDB);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (java.text.ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				frmInGroup.setCursor(Cursor.getDefaultCursor());
+				lblLucene.setText("Lucene Search - HITS Analysis");
+				if (forceDB){
+					forceDB = false;
+					btnSearchStd.setEnabled(true);
+					btnSearchAdv.setEnabled(true);
+				}
+			}
+		});
 		JLabel lblToPos = new JLabel("TO Pos");
 		
 		JScrollPane scrollPane_1 = new JScrollPane();
@@ -457,20 +578,7 @@ public class LuceneSearchUI {
 		scrollPane_1.setViewportView(tableAdv);
 		advPanel.setLayout(gl_advPanel);
 		
-		mntmUpdateIndex.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				try {
-					frmInGroup.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-					luceneSearch.buildIndex(true);
-					frmInGroup.setCursor(Cursor.getDefaultCursor());
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} 
-				btnSearchStd.setEnabled(true);
-				btnSearchAdv.setEnabled(true);
-			}
-		});
+
 	}
 
 	private void viewResult(ArrayList<Document> listResult, JTable table, DefaultTableModel  model) throws java.text.ParseException{
@@ -518,7 +626,7 @@ public class LuceneSearchUI {
 			JPanel panel = new JPanel();
 			frmHelp.getContentPane().add(panel, BorderLayout.CENTER);
 			
-			JLabel lblNewLabel = new JLabel("<html>\r\n--------------------------------------<br>\r\nLucene Search Application<br>\r\nGroup 11 - IN4325<br>\r\n--------------------------------------<br>\r\nHow to use :<br>\r\n1. Build index : Tools -> Build Index<br>\r\n2. Search :<br>\r\n    a. Standard Search<br>\r\n    b. Advanced Search<br>\r\n<br>\r\n--------------------------------------<br>\r\nNugroho Dwi P         :4256786<br>\r\nMarhendra Lidiansa : 4256360<br>\r\nNidhi Singh               : 4242246<br>\r\n--------------------------------------<br>\r\n</html>");
+			JLabel lblNewLabel = new JLabel("<html>\r\n--------------------------------------<br>\r\nLucene Search Application<br>\r\nGroup 11 - IN4325<br>\r\n--------------------------------------<br>\r\nHow to use :<br>\r\n1. Build index : Tools -> Build Index-[Analysis type]<br>\r\n2. Search :<br>\r\n    a. Standard Search<br>\r\n    b. Advanced Search<br>\r\n<br>\r\n--------------------------------------<br>\r\nNugroho Dwi P         :4256786<br>\r\nMarhendra Lidiansa : 4256360<br>\r\nNidhi Singh               : 4242246<br>\r\n--------------------------------------<br>\r\n</html>");
 			lblNewLabel.setVerticalAlignment(SwingConstants.TOP);
 			GroupLayout gl_panel = new GroupLayout(panel);
 			gl_panel.setHorizontalGroup(

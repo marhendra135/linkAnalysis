@@ -13,10 +13,19 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.StringTokenizer;
 
+import org.apache.lucene.document.Document;
+
 import data.Email;
 
 public class GraphGenerator {
 	private ArrayList<String> listStopTerms;
+	private ArrayList<Document> listDocs = null;
+	public ArrayList<Document> getListDocs() {
+		return listDocs;
+	}
+	public void setListDocs(ArrayList<Document> listDocs) {
+		this.listDocs = listDocs;
+	}
 	private void initStopTerms(){
 		listStopTerms = new ArrayList<String>();
 		listStopTerms.add("(EmailAddress:");
@@ -56,7 +65,8 @@ public class GraphGenerator {
 		System.out.println("Graph Emails Size: " + i);
 		return listGObj;
 	}
-	
+
+
 	public ArrayList<GraphObj> generateGraphInputModelforEmailAddress(ArrayList<Email> listEmails) throws IOException{
 		ArrayList<GraphObj> listGObj = new ArrayList<GraphObj>();
 		

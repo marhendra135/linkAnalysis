@@ -41,6 +41,14 @@ public class LuceneQuery {
     private Query q=null;
     
     
+	public int getMaxResult() {
+		return maxResult;
+	}
+
+	public void setMaxResult(int maxResult) {
+		this.maxResult = maxResult;
+	}
+
 	public LuceneQuery(HashMap<String, String> map) {
 		super();
 		this.map = map;
@@ -66,7 +74,7 @@ public class LuceneQuery {
 			      int docId = hits[i].doc;
 			      
 			      Document d = searcher.doc(docId);
-			      System.out.println((i + 1) + ". " + d.get("senderName") + "\t" + d.get("subject") + "\t" + d.get("mid") + "\t" + hits[i].score);
+			      System.out.println((i + 1) + ". " + d.get("senderName") + "\t" + d.get("subject") + "\t" + d.get("mId") + "\t" + hits[i].score);
 			      listRes.add(d);
 			     
 			    }
@@ -121,10 +129,12 @@ public class LuceneQuery {
 		while (iter.hasNext() && !found){
 			Map.Entry<String, String> entry = (Map.Entry<String, String>) iter.next(); 
 			String value = (String) entry.getValue();
-			if (!queryOut.equals(""))
-				queryOut = queryOut + " OR " + value +":" + query;
-			else
-				queryOut = queryOut + value +":" + query;	
+			if (!value.equals("mId")){
+				if (!queryOut.equals(""))
+					queryOut = queryOut + " OR " + value +":" + query;
+				else
+					queryOut = queryOut + value +":" + query;
+			}
 			value= value + ":";
 			found = query.toLowerCase().contains(value.toLowerCase());
 		}

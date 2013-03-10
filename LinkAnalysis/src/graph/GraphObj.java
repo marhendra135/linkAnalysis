@@ -1,6 +1,9 @@
 package graph;
 
 public class GraphObj {
+	/*
+	 * This object is used to represent each Vertices in graph
+	 * */
 	private String vOut;
 	private String vIn;
 	private String term;

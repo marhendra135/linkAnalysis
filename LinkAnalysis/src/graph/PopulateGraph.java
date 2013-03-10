@@ -1,5 +1,7 @@
 package graph;
 
+
+
 import data.Email;
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.graph.SparseMultigraph;
@@ -13,33 +15,20 @@ import java.util.HashMap;
 import upload.DocumentCreator;
 
 public class PopulateGraph{
+	/*
+	 * This class populates the graph with JUNG's data structure for further analysis
+	 * */
 	ArrayList<GraphObj> listGObjEmail;
 	ArrayList<GraphObj> listGObjEmailAddress;
 	
 	public PopulateGraph(ArrayList<GraphObj> listGObjEmail, ArrayList<GraphObj> listGObjEmailAddress) {
 		this.listGObjEmail = listGObjEmail;
 		this.listGObjEmailAddress = listGObjEmailAddress;
-		//GraphGenerator gg = new GraphGenerator();
-		//this.listGObjEmail = gg.generateGraphInputModelforEmail();
-		
-//		HashMap<String, String> docMap = new HashMap<String, String>();
-//  		docMap.put("mId", "mId");
-//  		docMap.put("date", "date");
-//  		docMap.put("senderEmails", "senderEmails");
-//  		docMap.put("senderName", "senderName");
-//  		docMap.put("senderStatus", "senderStatus");
-//  		docMap.put("subject", "subject");
-//  		docMap.put("body", "body");
-//  		docMap.put("recEmail", "recEmail");
-//  		docMap.put("recName", "recName");
-//  		docMap.put("recStatus", "recStatus");
-//  		docMap.put("recStatus", "recStatus");
-//		DocumentCreator gc = new DocumentCreator(docMap);
-//		ArrayList<Email> listEmails = gc.emailGenerator();
-		//this.listGObjEmailAddress = gg.generateGraphInputModelforEmailAddress(listEmails);
+
 	}
 	
 	public Graph<String, String> genEmailGraph(){
+		System.out.println("generate Email graph :" + listGObjEmail.size());
 		// create a graph with string type vertex and edge
 		Graph<String, String> g1 = new SparseMultigraph<String, String>();
 	
@@ -66,7 +55,7 @@ public class PopulateGraph{
 		Graph<String, String> g2 = new SparseMultigraph<String, String>();
 	
 		// iterate over the graph object email list to add the email ids as nodes
-		System.out.println("genEmailAdress graph :" + listGObjEmailAddress.size());
+		System.out.println("generate EmailAdress graph :" + listGObjEmailAddress.size());
 		for (int i = 0; i < listGObjEmailAddress.size(); i++){
 			g2.addVertex(listGObjEmailAddress.get(i).getvIn());
 			g2.addVertex(listGObjEmailAddress.get(i).getvOut());

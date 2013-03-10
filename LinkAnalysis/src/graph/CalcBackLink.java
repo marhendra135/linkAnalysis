@@ -5,10 +5,19 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 public class CalcBackLink {
+	/*
+	 * This class is used to calculate the weight of each Email and Email Address using backlink Analysis. 
+	 * */
 	public CalcBackLink(){
 		super();
 	}
 	public HashMap<String,Double> getBackLinks(ArrayList<GraphObj> listGObj){
+		/*
+		 * This function is used to calculate the weight of each Email and Email Address using backlink Analysis
+		 * This function results HashMap<String,Double>
+		 * *
+		 */
+		long start = System.currentTimeMillis();
 		HashMap<String,Double> mapRes = null;
 		if (listGObj!=null){
 			mapRes = new HashMap<String,Double>();
@@ -26,6 +35,7 @@ public class CalcBackLink {
 				}
 			}
 		}
+		System.out.println("BackLink for the graph computed in " + (System.currentTimeMillis()-start) + " ms");
 		return mapRes;
 	}
 

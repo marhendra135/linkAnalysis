@@ -27,22 +27,34 @@ public class DocumentCreator {
 	 * 
 	 * */
 	//private ArrayList<Document> listDocuments= null;
+	private HashMap<String,Double> mapPosition = null;
 	private HashMap<String,String> map = null;
 	//private ArrayList<Email> listEmails = null;
-
+	
+	private void initiateProps(){
+		mapPosition = new HashMap<String, Double>();
+		mapPosition.put("CEO", new Double(0.4));
+		mapPosition.put("Director", new Double(0.4));
+		mapPosition.put("President", new Double(0.3));
+		mapPosition.put("Vice President", new Double(0.3));
+		mapPosition.put("Manager", new Double(0.2));
+		mapPosition.put("Managing Director", new Double(0.2));
+	}
 
 	public DocumentCreator() {
 		super();
+		initiateProps();
 	}
 	
 	public DocumentCreator(HashMap<String, String> map) {
 		super();
+		initiateProps();
 		this.map = map;
 	}
 
 	public ArrayList<Document> documentGenerator(ArrayList<Email> listEmails) {
 		/*
-		 * This function populate the list of Documents from the database.
+		 * This function populate the list of Documents from the list of Emails.
 		 * This function results list of Documents.
 		 * */
 		ArrayList<Document> listDocuments = createDocumentList(listEmails, map);
@@ -53,8 +65,8 @@ public class DocumentCreator {
 	
 	public ArrayList<Email> emailGenerator() {
 		/*
-		 * This function populate the list of Documents from the database.
-		 * This function results list of Documents.
+		 * This function populate the list of Emails from the database.
+		 * This function results list of Emails.
 		 * */
 		ArrayList<Email> listEmails = null;
 		DBUploader uploader = new DBUploader();
@@ -76,7 +88,7 @@ public class DocumentCreator {
 
 	private ArrayList<Email> createEmailList(ResultSet resultSet) throws SQLException {
 		/*
-		 * This function populate the list of Documents from the resultset of database query.
+		 * This function populate the list of Emails from the resultset of database query.
 		 * This function maps the ResultSet with the Lucene Document class using predefined terms in Map
 		 * This function results list of Documents.
 		 * */
@@ -147,9 +159,10 @@ public class DocumentCreator {
 	}
 	public ArrayList<Document> createDocumentList(ArrayList<Email> listEmails, HashMap<String, String> map)  {
 		/*
-		 * This function populate the list of Documents from the resultset of database query.
-		 * This function maps the ResultSet with the Lucene Document class using predefined terms in Map
-		 * This function results list of Documents.
+		 * This function populate the list of Documents from the liset of Emails.
+		 * This function maps the List of Emails with the Lucene Document class using predefined terms in Map and
+		 * define the weight of document (by defining setBoost for each fields using the Email.getbVal())
+		 * This function results list of Documents with determined boost value.
 		 * */
 		ArrayList<Document> listDocs= null;
 		Document doc = null;
@@ -164,7 +177,7 @@ public class DocumentCreator {
 				Email email = iter.next();
 				bValDef= (float) email.getbVal();
 				doc = new Document();
-				tField = new StringField(map.get("mId"), email.getmId(), Field.Store.NO);
+				tField = new StringField(map.get("mId"), email.getmId(), Field.Store.YES);
 				//tField.setBoost(bValDef);
 				doc.add(tField);
 				tField = new TextField(map.get("recEmail"), email.getRecEmail(), Field.Store.NO);
@@ -193,24 +206,36 @@ public class DocumentCreator {
 				doc.add(tField);
 				tField = new TextField(map.get("body"), email.getBody(), Field.Store.YES);
 				tField.setBoost(((float) 1.2) * bValDef);
+				doc.add(tField);
 				//doc.add(new TextField("type", resultSet.getString("rtype"), Field.Store.YES));
 				listDocs.add(doc);
 				sb.append(":>" + email.getmId() + "::"+ email.getbVal() + "\n");
 			}
 			System.out.println("ArrayList size = "+ listDocs.size());
-			//writeStringToFile(sb.toString(),"bVALDoc.txt");
+			writeStringToFile(sb.toString(),"bVALDoc.txt");
 		}
 		System.out.println("Done populating document list from emails:" + Calendar.getInstance().getTime());
 		return listDocs; 
 	}
 	
 	public void setEmailBVALValues(boolean setDefault, ArrayList<Email> listEmails, Map<String, Double> listCalcEmail, Map<String, Double> listCalcEmailAdr){
+		/*
+		 * this procedure sets the bVal value for each Emails using the value resulted from selected link analysis
+		 * the bVal will be used to set the document's boost value
+		 * the calculation is : 
+		 * a. no link analysis : [1/number of emails] X [value_of_sender's_position]
+		 * b. with link analysis : [value_of_email_analysis] X [value_of_sender_analysis] x [value_of_sender's_position]
+		 * [value_of_sender's_position] is used to leverage the importance of emails sent by higher rank and vice versa
+		 * if either [value_of_email_analysis] or [value_of_sender_analysis] is found, the the value is using the minimum value of
+		 * each variable
+		 * */
 		double minEmail = 1000;
 		double minEmailAdr =1000;
-		double bVal = 1.0/listEmails.size(); 
+		double bVal = 1.0/listEmails.size();
+		double nPosition = 1.0;
 		if (setDefault){
-			minEmail = 1;
-			minEmailAdr = 1;
+			minEmail = 1.0;
+			minEmailAdr = 1.0;
 		}
 		else{
 			//get min value
@@ -237,9 +262,12 @@ public class DocumentCreator {
 				if (listCalcEmail.get(email.getmId())!=null)
 					nEmailVal = listCalcEmail.get(email.getmId());
 				if (listCalcEmailAdr.get(email.getSenderEmails())!=null)
-					nEmailAdrVal = listCalcEmailAdr.get(email.getSenderEmails());	
+					nEmailAdrVal = listCalcEmailAdr.get(email.getSenderEmails());
+				nPosition = 0.1;
+				if (mapPosition.get(email.getSenderStatus())!=null)
+					nPosition = mapPosition.get(email.getSenderStatus()).doubleValue();
 			}
-			email.setbVal(bVal*nEmailAdrVal*nEmailVal);
+			email.setbVal(bVal*nEmailAdrVal*nEmailVal*nPosition);
 			sb.append(":>" + email.getmId() + "::"+ email.getbVal() + "\n");
 			//System.out.println(":>" + email.getmId() + "::"+ email.getbVal() + "-" + bVal+ "-" +  nEmailVal + "-" + nEmailAdrVal);
 		}
